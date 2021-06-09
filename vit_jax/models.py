@@ -179,7 +179,7 @@ class Encoder(nn.Module):
         posemb_init=nn.initializers.normal(stddev=0.02),  # from BERT.
         name='posembed_input')
     x = nn.dropout(x, rate=dropout_rate, deterministic=not train)
-
+    
     # Input Encoder
     for lyr in range(num_layers):
       x = Encoder1DBlock(
@@ -238,7 +238,7 @@ class VisionTransformer(nn.Module):
         hidden_size, patches.size,
         strides=patches.size,
         padding='VALID',
-        name='embedding')
+        name='embedding') # lizx: this line divides the image into patches
 
     # Here, x is a grid of embeddings.
 
@@ -246,7 +246,7 @@ class VisionTransformer(nn.Module):
     if transformer is not None:
       n, h, w, c = x.shape
       x = jnp.reshape(x, [n, h * w, c])
-
+      
       # If we want to add a class token, add it here.
       if classifier == 'token':
         cls = self.param('cls', (1, 1, c), nn.initializers.zeros)

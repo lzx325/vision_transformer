@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
+import vit_logging
 import unittest
 
 import jax
@@ -40,8 +40,8 @@ class CheckpointTest(unittest.TestCase):
         jax.random.PRNGKey(0),
         [((1, 32, 32, 3), jnp.float32)],
     )
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger = vit_logging.getLogger()
+    logger.setLevel(vit_logging.INFO)
     checkpoint.load_pretrained(
         pretrained_path='testing.npz',
         init_params=params,

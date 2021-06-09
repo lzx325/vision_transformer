@@ -83,7 +83,7 @@ def accumulate_gradient(loss_and_grad_fn, params, images, labels, accum_steps):
     l, g = loss_and_grad_fn(params, images[:step_size], labels[:step_size])
 
     def acc_grad_and_loss(i, l_and_g):
-      imgs = jax.lax.dynamic_slice(images, (i * step_size, 0, 0, 0),
+      imgs = jax.lax.dynamic_slice(images, (i * step_size, 0, 0, 0), # lizx: extract data for one step
                                    (step_size,) + images.shape[1:])
       lbls = jax.lax.dynamic_slice(labels, (i * step_size, 0),
                                    (step_size, labels.shape[1]))

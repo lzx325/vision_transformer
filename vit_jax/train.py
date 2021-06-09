@@ -15,6 +15,7 @@
 import functools
 import glob
 import os
+os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"]="false"
 import time
 
 from clu import metric_writers
@@ -33,7 +34,7 @@ import tensorflow as tf
 from vit_jax import checkpoint
 from vit_jax import flags
 from vit_jax import hyper
-from vit_jax import logging
+from vit_jax import vit_logging
 from vit_jax import input_pipeline
 from vit_jax import models
 from vit_jax import momentum_clip
@@ -56,14 +57,14 @@ def make_update_fn(vit_fn, accum_steps):
       return -jnp.mean(jnp.sum(logp * labels, axis=1))
 
     def loss_fn(params, images, labels):
-      with flax.nn.stochastic(update_rng):
+      with flax.nn.stochastic(update_rng): # lizx: for dropout
         logits = vit_fn(params, images, train=True)
       return cross_entropy_loss(logits=logits, labels=labels)
 
     l, g = hyper.accumulate_gradient(
         jax.value_and_grad(loss_fn), opt.target, batch['image'], batch['label'],
         accum_steps)
-    g = jax.tree_map(lambda x: jax.lax.pmean(x, axis_name='batch'), g)
+    g = jax.tree_map(lambda x: jax.lax.pmean(x, axis_name='batch'), g) # lizx: average gradients across devices
 
     opt = opt.apply_gradient(g, learning_rate=lr)
     return opt, l, new_update_rng
@@ -73,7 +74,7 @@ def make_update_fn(vit_fn, accum_steps):
 
 def main(args):
   logdir = os.path.join(args.logdir, args.name)
-  logger = logging.setup_logger(logdir)
+  logger = vit_logging.setup_logger(logdir)
   logger.info(args)
 
   logger.info(f'Available devices: {jax.devices()}')
@@ -159,7 +160,6 @@ def main(args):
   for step, batch, lr_repl in zip(
       range(1, total_steps + 1),
       input_pipeline.prefetch(ds_train, args.prefetch), lr_iter):
-
     opt_repl, loss_repl, update_rngs = update_fn_repl(
         opt_repl, lr_repl, batch, update_rngs)
 

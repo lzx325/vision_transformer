@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import flax
+import ipdb
 import jax
 import numpy as np
 import tensorflow as tf
@@ -103,7 +104,6 @@ def get_data(*,
   crop_size = preset['crop']
   data_builder = tfds.builder(dataset, data_dir=tfds_data_dir)
   dataset_info = get_dataset_info(dataset, split)
-
   data_builder.download_and_prepare(
       download_config=tfds.download.DownloadConfig(manual_dir=tfds_manual_dir))
   data = data_builder.as_dataset(
