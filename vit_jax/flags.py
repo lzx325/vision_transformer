@@ -18,7 +18,7 @@ import argparse
 def argparser(known_models, known_datasets):
   parser = argparse.ArgumentParser(description='Fine-tune ViT-M model.')
   parser.add_argument(
-      '--name',
+      '--exp_name',
       required=True,
       help='Name of this run. Used for monitoring and checkpointing.')
   parser.add_argument(
@@ -26,7 +26,7 @@ def argparser(known_models, known_datasets):
       choices=list(known_models),
       help='Which variant to use; ViT-M gives best results.')
   parser.add_argument(
-      '--logdir', required=True, help='Where to log training info (small).')
+      '--train_dir', required=True, help='Where to log training info (small).')
   parser.add_argument(
       '--vit_pretrained_dir',
       default='.',
@@ -107,6 +107,16 @@ def argparser(known_models, known_datasets):
       default='cosine',
       help='How to decay the learning rate.')
   parser.add_argument(
+      '--linear_end',
+      type=float,
+      default=1e-5,
+  )
+  parser.add_argument(
+      '--weight_decay',
+      type=float,
+      default=0.0,
+  )
+  parser.add_argument(
       '--warmup_steps',
       type=int,
       default=500,
@@ -123,5 +133,17 @@ def argparser(known_models, known_datasets):
       type=int,
       default=10,
       help='Log progress every so many steps.')
+  parser.add_argument(
+      '--mode',
+      type=str
+  )
+  parser.add_argument(
+      '--resume_dir',
+      type=str
+  )
+  parser.add_argument(
+      '--resume_from',
+      type=str
+  )
 
   return parser

@@ -5,3 +5,6 @@ __pycache__/
 .ipynb_checkpoints/
 log*/
 *.swp
+*.pyc
+slurm/
+train_dir/

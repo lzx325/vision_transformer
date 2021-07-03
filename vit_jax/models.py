@@ -257,7 +257,7 @@ class VisionTransformer(nn.Module):
 
     if classifier == 'token':
       x = x[:, 0]
-    elif classifier == 'gap':
+    elif classifier == 'gap': # lizx: global average pooling
       x = jnp.mean(x, axis=list(range(1, x.ndim - 1)))  # (1,) or (1,2)
 
     if representation_size is not None:
@@ -272,6 +272,7 @@ class VisionTransformer(nn.Module):
 
 CONFIGS = {
     'ViT-B_16': configs.get_b16_config(),
+    'ViT-B_16_pretrain': configs.get_b16_pretrain_config(),
     'R50+ViT-B_16': configs.get_r50_b16_config(),
     'ViT-B_32': configs.get_b32_config(),
     'ViT-L_16': configs.get_l16_config(),
