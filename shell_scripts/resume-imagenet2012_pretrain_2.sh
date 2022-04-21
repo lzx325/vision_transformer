@@ -5,7 +5,7 @@ python -m vit_jax.train \
     --train_dir train_dir \
     --vit_pretrained_dir pretrained_vit_models \
     --dataset imagenet2012 \
-    --batch 1280 \
+    --batch 512 \
     --base_lr 4.262e-4 \
     --decay_type cosine \
     --linear_end 1e-5 \
@@ -13,5 +13,5 @@ python -m vit_jax.train \
     --eval_every 1000 \
     --total_steps 10000000 \
     --weight_decay 0.00 \
-    --resume_dir train_dir/imagenet2012_pretrain_2/2021-06-13-13:00:27 \
-    --resume_from step-44000.npz
+    --resume_dir train_dir/imagenet2012_resume/2021-07-03-19:22:39 \
+    --resume_from step-76000.npz 

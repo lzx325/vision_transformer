@@ -196,7 +196,6 @@ def main(args):
     resume_step=int(splitext(args.resume_from)[0].split('-')[1])
 
   lr_iter = hyper.lr_prefetch_iter(lr_fn, resume_step, total_steps)
-  import ipdb; ipdb.set_trace()
   update_rngs = jax.random.split(
       jax.random.PRNGKey(0), jax.local_device_count())
 
@@ -221,7 +220,7 @@ def main(args):
       logger.info(f'First step took {time.time() - t0:.1f} seconds.')
       t0 = time.time()
     if args.progress_every and step % args.progress_every == 0:
-      writer.write_scalars(step, dict(train_loss=float(loss_repl[0])))
+      writer.write_scalars(step, dict(train_loss=float(loss_repl[0]),lr=float(lr_repl[0])))
       done = step / total_steps
       logger.info(f'Step: {step}/{total_steps} {100*done:.1f}%, '
                   f'ETA: {(time.time()-t0)/done*(1-done)/3600:.2f}h')
@@ -241,7 +240,7 @@ def main(args):
       logger.info(f'Step: {step} '
                   f'Learning rate: {lr:.7f}, '
                   f'Test accuracy: {accuracy_test:0.5f}')
-      writer.write_scalars(step, dict(accuracy_test=accuracy_test, lr=lr))
+      writer.write_scalars(step, dict(accuracy_test=accuracy_test))
 
       ckpt_fp=os.path.join(ckpt_dir,f"step-{step}.npz")
       checkpoint.save(flax_utils.unreplicate(opt_repl.target), ckpt_fp)
@@ -265,6 +264,8 @@ def get_previous_tensorboard_data(data_fp):
         scalar_df_list.append(scalar_df)
     scalar_df=pd.concat(scalar_df_list,axis=0)
     scalar_df=scalar_df.reset_index()
+  else:
+      assert False
   return scalar_df
 def write_args_to_yaml(args,yaml_fp):
   with open(yaml_fp,"w") as f:
